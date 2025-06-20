@@ -1,36 +1,12 @@
 body {
-    font-family: 'Courier New', monospace;
+    font-family: 'Open Sans', sans-serif;
     font-size: 1rem;
-    color: #fff;
-    background-color: #000;
-}
-
-h1 {
-    font-size: 2rem;
-    padding-top: 20px;
-}
-
-h2 {
-    font-size: 1.2rem;
+    background-color: #E4E6EC;
 }
 
 input {
     padding: 10px;
-    border-radius: 5px;
-    width: 80%;
-    background-color: white;
-    color: black;
+    border-radius: 8px;
+    width: 100%;
     font-size: 1.2rem;
-    text-align: center;
-}
-
-button {
-    padding: 10px;
-    margin: 10px;
-    border-radius: 5px;
-    background-color: darkgray;
-    color: black;
-    width: auto;
-    font-size: 1.2rem;
-    cursor: pointer;
 }

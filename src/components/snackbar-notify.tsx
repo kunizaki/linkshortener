@@ -1,3 +1,5 @@
+'use client'
+
 import React, {useState, useEffect, useCallback} from 'react'
 
 interface SnackbarNotifyProps {
@@ -38,37 +40,25 @@ export function SnackbarNotify({ message, severity, setNotifyMessage }: Snackbar
       style={{
         position: 'fixed',
         bottom: '20px',
-        left: '50%',
-        transform: 'translateX(-50%)',
+        right: '20px',
         zIndex: 9999,
         padding: '16px',
         borderRadius: '4px',
         backgroundColor: getBackgroundColor(severity),
-        color: '#fff',
+        color: getTextColor(severity),
         boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
         maxWidth: '90%',
         textAlign: 'center',
       }}
     >
-      <span>{message}</span>
-      <button
-        onClick={handleClose}
-        style={{
-          marginLeft: '16px',
-          background: 'none',
-          border: 'none',
-          color: '#fff',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-        }}
-      >
-        ×
-      </button>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+            <span>{message}</span>
+        </div>
     </div>
   )
 }
 
-function getBackgroundColor(severity: 'error' | 'info' | 'success' | 'warning'): string {
+function getTextColor(severity: 'error' | 'info' | 'success' | 'warning'): string {
   switch (severity) {
     case 'success':
       return '#4caf50'
@@ -81,4 +71,19 @@ function getBackgroundColor(severity: 'error' | 'info' | 'success' | 'warning'):
     default:
       return '#323232'
   }
+}
+
+function getBackgroundColor(severity: 'error' | 'info' | 'success' | 'warning'): string {
+    switch (severity) {
+        case 'success':
+            return '#c9ffca'
+        case 'error':
+            return '#ffbbb6'
+        case 'warning':
+            return '#fddcaa'
+        case 'info':
+            return '#a0d5ff'
+        default:
+            return '#a1a1a1'
+    }
 }

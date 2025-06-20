@@ -22,21 +22,14 @@ export async function POST(request: Request): Promise<Response> {
         const prisma = new PrismaClient()
         const findDuplicate = await prisma.shortLink.findFirst({
             where: {
-                original: body.original
+                shortId: body.shortId,
             }
         })
         if (findDuplicate) {
-            return Response.json({ message: 'Já existe um link com esse URL.'}, { status: 409 })
+            return Response.json({ message: 'Já existe um link com esse código.'}, { status: 409 })
         }
 
         // Garante a unicidade do shortId gerado
-        let uniqueShortId: string;
-        do {
-            uniqueShortId = generateShortId();
-        } while (await prisma.shortLink.findFirst({ where: { shortId: uniqueShortId } }));
-
-        body.shortId = uniqueShortId;
-
         const shortUrlInfos = await prisma.shortLink.create({
             data: body
         })

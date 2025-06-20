@@ -25,11 +25,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt">
-      <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ backgroundColor: '#000000', color: '#ffffff'}}>
-        <div style={{display: 'flex', justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center', width: '100%', height: '100dvh', textAlign: 'center'}}>
-          <h1>Sistema encurtador de links</h1>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
           {children}
-        </div>
       </body>
     </html>
   );
