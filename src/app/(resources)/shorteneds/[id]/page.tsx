@@ -9,7 +9,7 @@ type NotifyMessage = {
     severity: 'error' | 'info' | 'success' | 'warning'
 }
 
-export default function ShortededsPage({ params }: { params: { id: string } }) {
+export default function ShortenedPage({ params }: { params: { id: string } }) {
     const { id } = params
 
     const [processing, setProcessing] = useState<boolean>(true)
@@ -32,7 +32,6 @@ export default function ShortededsPage({ params }: { params: { id: string } }) {
                 })
             }
             const data = await responseUrlInfos.json()
-            console.log("dados do log: ", data)
             setAccessLogInfos(data)
         } catch (err) {
             console.error(err)
@@ -58,21 +57,20 @@ export default function ShortededsPage({ params }: { params: { id: string } }) {
           {accessLogInfos && accessLogInfos.length > 0 && (
               <>
                   <h2>Dados dos acessos:</h2>
-                  <h2>{accessLogInfos[0].shortLink.original}</h2>
-                  <table>
-                      <thead>
-                          <tr>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ccc'}}>
+                      <thead style={{ backgroundColor: '#ccc', color: '#000' }}>
+                            <tr style={{ height: '40px'}}>
                               <th>Data/Hora</th>
                               <th>Informações</th>
                               <th>IP</th>
-                          </tr>
+                            </tr>
                       </thead>
                       <tbody>
                         {accessLogInfos.map((logInfo) => (
                             <tr key={logInfo.id}>
-                                <td>{new Date(logInfo.timestamp).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</td>
-                                <td>{logInfo.userAgent}</td>
-                                <td>{logInfo.ip}</td>
+                                <td style={{ padding: '10px', border: '1px solid #fff' }}>{new Date(logInfo.timestamp).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}</td>
+                                <td style={{ padding: '10px', border: '1px solid #fff' }}>{logInfo.userAgent}</td>
+                                <td style={{ padding: '10px', border: '1px solid #fff' }}>{logInfo.ip}</td>
                             </tr>
                         ))}
                       </tbody>
@@ -83,6 +81,16 @@ export default function ShortededsPage({ params }: { params: { id: string } }) {
           {!processing && !accessLogInfos && (
               <h2>Link não encontrado. Verifique o código informado.</h2>
           )}
+
+          <div style={{ paddingTop: '20px' }}>
+              <button
+                  type="submit"
+                  onClick={() => window.open(`${window.location.origin}`, '_self' )}
+                  disabled={processing}
+              >
+                  Voltar para página inicial
+              </button>
+          </div>
 
           <SnackbarNotify message={notifyMessage.message} severity={notifyMessage.severity} setNotifyMessage={setNotifyMessage} />
       </>

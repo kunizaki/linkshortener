@@ -37,6 +37,7 @@ export default function HomePage() {
                     message: 'Erro ao gerar o link',
                     severity: 'error'
                 })
+                return
             }
             const data = await response.json()
             setShortUrlInfos(data)
@@ -82,6 +83,15 @@ export default function HomePage() {
                   </div>
               </>
           )}
+          <div style={{ paddingTop: '20px' }}>
+              <button
+                  type="submit"
+                  onClick={() => window.open(`${window.location.origin}/shorteneds`, '_self' )}
+                  disabled={processing}
+              >
+                  Listagem de URLs encurtadas
+              </button>
+          </div>
 
           <SnackbarNotify message={notifyMessage.message} severity={notifyMessage.severity} setNotifyMessage={setNotifyMessage} />
       </>

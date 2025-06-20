@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {SnackbarNotify} from "@/components/snackbar-notify";
 import {ShortLink} from "@/types/ShortLink";
 import { useRouter } from 'next/navigation'
@@ -124,6 +124,16 @@ export default function LinksPage() {
           {!processing && !shortLinks && (
               <h2>Nenhum link encontrado.</h2>
           )}
+
+          <div style={{ paddingTop: '20px' }}>
+              <button
+                  type="submit"
+                  onClick={() => window.open(`${window.location.origin}`, '_self' )}
+                  disabled={processing}
+              >
+                  Voltar para página inicial
+              </button>
+          </div>
 
           <SnackbarNotify message={notifyMessage.message} severity={notifyMessage.severity} setNotifyMessage={setNotifyMessage} />
       </>

@@ -8,9 +8,6 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV}
       DATABASE_URL: ${DATABASE_URL}
-    volumes:
-      - .:/app
-    command: sh -c "npm run build && npm start"
     depends_on:
       - db
     networks:
