@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ShortLink {
+  id        String      @id @default(cuid())
+  shortId   String      @unique
+  original  String
+  createdAt DateTime    @default(now())
+  accesses  AccessLog[] @relation("AccessLogsToShortLink")
+
+  @@map("shortlinks")
+}
+
+model AccessLog {
+  id          String    @id @default(cuid())
+  shortLink   ShortLink @relation("AccessLogsToShortLink", fields: [shortLinkId], references: [shortId], onDelete: Cascade)
+  shortLinkId String
+  timestamp   DateTime  @default(now())
+  userAgent   String
+  ip          String
+
+  @@map("accesslogs")
+}
