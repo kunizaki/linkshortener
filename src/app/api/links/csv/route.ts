@@ -1,12 +1,11 @@
-import {PrismaClient} from "@prisma/client"
+import { db } from "@/db"
 import { NextResponse } from "next/server"
 
 export async function GET(): Promise<Response> {
     try {
         // Buscar todos os links da base de dados
-        const prisma = new PrismaClient()
-        const links = await prisma.shortLink.findMany({
-            include: {
+        const links = await db.query.shortLinks.findMany({
+            with: {
                 accesses: true
             }
         })
@@ -31,9 +30,9 @@ export async function GET(): Promise<Response> {
         })
     } catch (error) {
         if (error instanceof Error) {
-            throw new Error(error.message)
+            return new NextResponse(error.message, { status: 500 })
         } else {
-            throw new Error("Erro na busca de links")
+            return new NextResponse("Erro na busca de links", { status: 500 })
         }
     }
 }

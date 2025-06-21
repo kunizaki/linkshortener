@@ -327,33 +327,31 @@ export default function HomePage() {
                           </>
                       )}
                       {shortLinks && shortLinks.length > 0 && !linksLoading && shortLinks.map((linkInfo) => (
-                          <>
-                              <ListAccessRow key={linkInfo.id}>
-                                  <div
-                                      onClick={() =>{
-                                          if (typeof window !== 'undefined') {
-                                            window.open(`${origin}/${linkInfo.shortId}`, '_blank')
-                                        }
-                                      }}
-                                      style={{ flex: 1, cursor: 'pointer' }}
-                                  >
-                                      <TextLink>{`${origin}/${linkInfo.shortId}`}</TextLink>
-                                      <SmallText>{linkInfo.original}</SmallText>
-                                  </div>
-                                  <div>
-                                      <SmallText>{`${linkInfo?.accesses ? linkInfo.accesses.length : 0} acessos`}</SmallText>
-                                  </div>
-                                  <div style={{ display: 'flex'}}>
-                                      <ButtonCommand onClick={()=> copyToClipboard(`${origin}/${linkInfo.shortId}`)} >
-                                          <Image src={CopyIcon} alt="Copiar Link" width={12} height={12} />
-                                      </ButtonCommand>
-                                      <ButtonCommand onClick={()=> removeShortedLink(linkInfo.id)} >
-                                          <Image src={TrashIcon} alt="Excluir Link" width={12} height={12} />
-                                      </ButtonCommand>
+                          <ListAccessRow key={linkInfo.id}>
+                              <div
+                                  onClick={() =>{
+                                      if (typeof window !== 'undefined') {
+                                        window.open(`${origin}/${linkInfo.shortId}`, '_blank')
+                                    }
+                                  }}
+                                  style={{ flex: 1, cursor: 'pointer' }}
+                              >
+                                  <TextLink>{`${origin}/${linkInfo.shortId}`}</TextLink>
+                                  <SmallText>{linkInfo.original}</SmallText>
+                              </div>
+                              <div>
+                                  <SmallText>{`${linkInfo?.accesses ? linkInfo.accesses.length : 0} acessos`}</SmallText>
+                              </div>
+                              <div style={{ display: 'flex'}}>
+                                  <ButtonCommand onClick={()=> copyToClipboard(`${origin}/${linkInfo.shortId}`)} >
+                                      <Image src={CopyIcon} alt="Copiar Link" width={12} height={12} />
+                                  </ButtonCommand>
+                                  <ButtonCommand onClick={()=> removeShortedLink(linkInfo.id)} >
+                                      <Image src={TrashIcon} alt="Excluir Link" width={12} height={12} />
+                                  </ButtonCommand>
 
-                                  </div>
-                              </ListAccessRow>
-                          </>
+                              </div>
+                      </ListAccessRow>
                       ))}
                   </ListBoxMessage>
               </Box>

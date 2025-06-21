@@ -1,19 +1,21 @@
-import {PrismaClient} from "@prisma/client"
-import {z} from "zod"
+import { db } from "@/db"
+import { accessLogs } from "@/db/schema"
+import { eq } from "drizzle-orm"
+import { z } from "zod"
 
 export async function GET(request: Request, { params }: { params: { id: string } }): Promise<Response> {
-    const shortLink = z.string().parse(params.id)
+    const { id } = params
+    const shortLink = z.string().parse(id)
     try {
         // Buscar um log da base de dados pelo ID
-        const prisma = new PrismaClient()
-        const response =  await prisma.accessLog.findMany({
-            where: {
-                shortLinkId: shortLink
-            }
+        const response = await db.query.accessLogs.findMany({
+            where: eq(accessLogs.shortLinkId, shortLink)
         })
-        if (!response) {
+
+        if (response.length === 0) {
             return Response.json({ message: 'Dados de acessos não encontrados' }, { status: 404 })
         }
+
         return Response.json(response)
     } catch (error) {
         if (error instanceof Error) {

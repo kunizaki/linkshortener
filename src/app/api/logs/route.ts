@@ -1,4 +1,6 @@
-import {PrismaClient} from "@prisma/client"
+import { db } from "@/db"
+import { accessLogs } from "@/db/schema"
+import { v4 as uuidv4 } from 'uuid'
 
 /**
  * Extrai o endereço IP do cabeçalho x-forwarded-for
@@ -29,38 +31,37 @@ function extractIpAddress(ipAddress: string | null): string {
     return ipAddress;
 }
 
-export async function GET(): Promise<object[]> {
+export async function GET(): Promise<Response> {
     try {
         // Buscar todos os logs de acesso da base de dados
-        const prisma = new PrismaClient()
-        return prisma.accessLog.findMany()
+        const logs = await db.query.accessLogs.findMany()
+        return Response.json(logs)
     } catch (error) {
         if (error instanceof Error) {
-            throw new Error(error.message)
+            return Response.json({ message: error.message }, { status: 500 })
         } else {
-            throw new Error("Erro na busca de logs")
+            return Response.json({ message: "Erro na busca de logs" }, { status: 500 })
         }
     }
 }
 
-export async function POST(request: Request): Promise<object> {
+export async function POST(request: Request): Promise<Response> {
     const body = await request.json()
     try {
         // cria um log de acesso na base de dados
-        const prisma = new PrismaClient()
-        await prisma.accessLog.create({
-            data: {
-                shortLinkId: body.shortLinkId,
-                ip: extractIpAddress(request.headers.get('x-forwarded-for')),
-                userAgent: request.headers.get('user-agent') || ''
-            }
+        await db.insert(accessLogs).values({
+            id: uuidv4(),
+            shortLinkId: body.shortLinkId,
+            ip: extractIpAddress(request.headers.get('x-forwarded-for')),
+            userAgent: request.headers.get('user-agent') || ''
         })
+
         return Response.json({ message: 'Log de acesso criado com sucesso.'})
     } catch (error) {
         if (error instanceof Error) {
-            throw new Error(error.message)
+            return Response.json({ message: error.message }, { status: 500 })
         } else {
-            throw new Error("Erro na criação de log")
+            return Response.json({ message: "Erro na criação de log" }, { status: 500 })
         }
     }
 }
