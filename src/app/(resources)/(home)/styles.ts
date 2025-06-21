@@ -59,6 +59,8 @@ export const BoxForm = styled.div`
 export const SmallText = styled.p<TextProps>`
     font-size: ${(props) => props?.fontSize || 10}px;
     color: #4D505C;
+    margin-top: 5px;
+    margin-bottom: 5px;
 `
 
 export const InputDefault = styled.input`
@@ -83,6 +85,7 @@ export const SubmitButton = styled.button`
     border: none;
     box-shadow: none;
     outline: none;
+    cursor: pointer;
 `
 
 export const DownloadButton = styled.button`
@@ -96,7 +99,8 @@ export const DownloadButton = styled.button`
     border: none;
     height: 40px;
     background-color: #E4E6EC;
-    color: #4D505C
+    color: #4D505C;
+    cursor: pointer;
 `
 
 export const ListBoxMessage = styled.div`
@@ -113,12 +117,17 @@ export const ListBoxMessage = styled.div`
 export const ListAccessRow = styled.div`
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    width: 100%;
     gap: 5px;
 `
 
 export const TextLink = styled.h4`
     font-size: 14px;
     color: #2C46B1; 
+    margin: 0;
 `
 
 export const ButtonCommand = styled.button`
@@ -126,8 +135,8 @@ export const ButtonCommand = styled.button`
     border-radius: 8px;
     background-color: #E4E6EC;
     color: #1F2025;
-    width: 32px;
-    height: 32px;    
+    border: none;
+    cursor: pointer;
 `
 
 export const AlertMessageElement = styled.div`

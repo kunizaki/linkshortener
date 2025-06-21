@@ -4,7 +4,11 @@ export async function GET(): Promise<Response> {
     try {
         // Buscar todos os links da base de dados
         const prisma = new PrismaClient()
-        const links = await prisma.shortLink.findMany()
+        const links = await prisma.shortLink.findMany({
+            include: {
+                accesses: true
+            }
+        })
         return Response.json(links)
     } catch (error) {
         if (error instanceof Error) {

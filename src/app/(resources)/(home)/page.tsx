@@ -36,6 +36,7 @@ import LinkIcon from '@/assets/icons/link-icon.png'
 import CopyIcon from '@/assets/icons/copy.png'
 import TrashIcon from '@/assets/icons/trash.png'
 import AlertIcon from '@/assets/icons/alert.png'
+import {useDeviceSize} from "@/components/useDeviceSize";
 
 type NotifyMessage = {
     message: string
@@ -50,8 +51,15 @@ const schemaValidation = z.object({
 type CreateFormData = z.infer<typeof schemaValidation>
 
 export default function HomePage() {
-    const isDesktop = window.innerWidth > 768
+    const [windowWidth] = useDeviceSize()
+    const [origin, setOrigin] = useState<string>('')
 
+    // Safely get the origin URL
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setOrigin(window.location.origin)
+        }
+    }, [])
     const {
         register,
         handleSubmit,
@@ -74,6 +82,11 @@ export default function HomePage() {
         message: '',
         severity: 'info',
     })
+
+    const isMobile = () => {
+        const maxWidthForMobile = 768
+        return windowWidth <= maxWidthForMobile
+    }
 
     const getShortLinks = async () => {
         try {
@@ -121,7 +134,7 @@ export default function HomePage() {
         }
     }
 
-    const submitUrl = async (dataInputed: CreateFormData) => {
+    const submitUrl = async (dataReceived: CreateFormData) => {
         try {
             setProcessing(true)
             const response = await fetch('/api/links', {
@@ -129,7 +142,7 @@ export default function HomePage() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(dataInputed)
+                body: JSON.stringify(dataReceived)
             })
             if (!response.ok) {
                 setNotifyMessage({
@@ -190,19 +203,44 @@ export default function HomePage() {
         }
     }
 
+    const copyToClipboard = (text: string) => {
+        if (navigator?.clipboard) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    setNotifyMessage({
+                        message: 'Link copiado...',
+                        severity: 'success'
+                    })
+                })
+                .catch((err) => {
+                    console.error('Could not copy text: ', err);
+                    setNotifyMessage({
+                        message: 'Erro ao copiar link',
+                        severity: 'error'
+                    })
+                });
+        } else {
+            setNotifyMessage({
+                message: 'Copia do link não é suportada neste navegador.',
+                severity: 'error'
+            })
+        }
+    };
+
+
     useEffect(() => {
         if (!shortLinks) {
             getShortLinks()
         }
     }, [shortLinks]);
-  return (
+    return (
       <Container>
           <LogoElement>
               <Image src={Logo} alt='Logomarca' width={50} height={50} />
               <h1>Encurtador de URL</h1>
           </LogoElement>
           <BoxContainer>
-              <Box style={{ width: isDesktop ? '380px' : '100%' }}>
+              <Box style={{ width: isMobile() ? '100%' : '380px'  }}>
                   <BoxTitle style={{ marginTop: '18px'}}>Novo link</BoxTitle>
                   <BoxForm>
                       <form onSubmit={handleSubmit(submitUrl)} action="">
@@ -237,7 +275,7 @@ export default function HomePage() {
                                       fontSize: '14px',
                                   }}
                               >
-                                {window.location.origin}/
+                                {origin}/
                               </div>
                               <InputDefault
                                   id="shortId"
@@ -248,7 +286,7 @@ export default function HomePage() {
                                       paddingLeft: '8px',
                                       width: '100%',
                                       boxSizing: 'border-box',
-                                      textIndent: `${window.location.origin.length + 110}px`,
+                                      textIndent: `${origin.length + 110}px`,
                                   }}
                               />
                           </div>
@@ -266,7 +304,7 @@ export default function HomePage() {
               <Box style={{ flex: 1 }}>
                   <LinksHeader>
                       <BoxTitle>Meus links</BoxTitle>
-                      <DownloadButton onClick={() => downloadCSV()}>
+                      <DownloadButton onClick={() => downloadCSV()} disabled={!shortLinks || shortLinks.length === 0}>
                           <Image src={DownloadIcon} alt="Download CSV" width={20} height={20} />
                           <SmallText fontSize={12}>Baixar CSV</SmallText>
                       </DownloadButton>
@@ -288,26 +326,35 @@ export default function HomePage() {
                                   <SmallText>AINDA NÃO EXISTEM LINKS CADASTRADOS</SmallText>
                               </>
                           )}
-                          {shortLinks && linksLoading && shortLinks.map((linkInfo) => (
-                              <ListAccessRow key={linkInfo.id}>
+                          {shortLinks && !linksLoading && shortLinks.map((linkInfo) => (
+                              <>
                                   <hr />
-                                  <div>
-                                      <TextLink>{`${window.location.origin}/${linkInfo.shortId}`}</TextLink>
-                                      <SmallText>{linkInfo.original}</SmallText>
-                                  </div>
-                                  <div>
-                                      <SmallText>{`${linkInfo?.accesses ? linkInfo.accesses.length : 0} acessos`}</SmallText>
-                                  </div>
-                                  <div>
-                                      <ButtonCommand onClick={()=> window.open(`${window.location.origin}/${linkInfo.shortId}`, '_blank')} >
-                                          <Image src={CopyIcon} alt="Copiar Link" width={12} height={12} />
-                                      </ButtonCommand>
-                                      <ButtonCommand onClick={()=> removeShortedLink(linkInfo.id)} >
-                                          <Image src={TrashIcon} alt="Excluir Link" width={12} height={12} />
-                                      </ButtonCommand>
+                                  <ListAccessRow key={linkInfo.id}>
+                                      <div
+                                          onClick={() =>{
+                                              if (typeof window !== 'undefined') {
+                                                window.open(`${origin}/${linkInfo.shortId}`, '_blank')
+                                            }
+                                          }}
+                                          style={{ flex: 1, cursor: 'pointer' }}
+                                      >
+                                          <TextLink>{`${origin}/${linkInfo.shortId}`}</TextLink>
+                                          <SmallText>{linkInfo.original}</SmallText>
+                                      </div>
+                                      <div style={{ padding: '10px' }}>
+                                          <SmallText>{`${linkInfo?.accesses ? linkInfo.accesses.length : 0} acessos`}</SmallText>
+                                      </div>
+                                      <div style={{ display: 'flex', gap: '10px'}}>
+                                          <ButtonCommand onClick={()=> copyToClipboard(`${origin}/${linkInfo.shortId}`)} >
+                                              <Image src={CopyIcon} alt="Copiar Link" width={16} height={16} />
+                                          </ButtonCommand>
+                                          <ButtonCommand onClick={()=> removeShortedLink(linkInfo.id)} >
+                                              <Image src={TrashIcon} alt="Excluir Link" width={16} height={16} />
+                                          </ButtonCommand>
 
-                                  </div>
-                              </ListAccessRow>
+                                      </div>
+                                  </ListAccessRow>
+                              </>
                           ))}
                       </ListBoxMessage>
               </Box>
