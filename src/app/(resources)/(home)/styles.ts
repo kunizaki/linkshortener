@@ -109,9 +109,10 @@ export const ListBoxMessage = styled.div`
     justify-content: center;
     align-items: center;
     align-content: center;
-    padding: 20px;
     overflow-y: auto;
-    max-height: 100dvh;
+    max-height: 60vh;
+    padding-top: 40px;
+    padding-bottom: 10px;
 `
 
 export const ListAccessRow = styled.div`
@@ -121,11 +122,14 @@ export const ListAccessRow = styled.div`
     align-items: center;
     align-content: center;
     width: 100%;
-    gap: 5px;
+    gap: 10px;
+    border-top: 1px solid #E1E1E6;
+    padding-top: 10px;
+    padding-bottom: 10px;
 `
 
 export const TextLink = styled.h4`
-    font-size: 14px;
+    font-size: 12px;
     color: #2C46B1; 
     margin: 0;
 `
@@ -137,6 +141,8 @@ export const ButtonCommand = styled.button`
     color: #1F2025;
     border: none;
     cursor: pointer;
+    margin-right: 5px;
+    margin-left: 5px;
 `
 
 export const AlertMessageElement = styled.div`

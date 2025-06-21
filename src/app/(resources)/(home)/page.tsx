@@ -45,7 +45,7 @@ type NotifyMessage = {
 
 const schemaValidation = z.object({
     original: z.string().url({ message: 'Informe uma url válida.'}),
-    shortId: z.string().refine((item) =>  /^[a-z]+$/.test(item), { message: 'Informe uma url minúscula e sem espaço/caracter especial.'})
+    shortId: z.string().refine((item) =>  /^[a-z0-9]+$/.test(item), { message: 'Informe uma url minúscula e sem espaço/caracter especial.'})
 })
 
 type CreateFormData = z.infer<typeof schemaValidation>
@@ -145,8 +145,9 @@ export default function HomePage() {
                 body: JSON.stringify(dataReceived)
             })
             if (!response.ok) {
+                const data = await response.json()
                 setNotifyMessage({
-                    message: 'Erro ao gerar o link',
+                    message:  data?.message || 'Erro ao gerar o link',
                     severity: 'error'
                 })
                 return
@@ -311,52 +312,50 @@ export default function HomePage() {
                   </LinksHeader>
                   <div style={{ height: '10px' }} />
                   <hr />
-                      <ListBoxMessage>
-                          {linksLoading && (
-                              <>
-                                  <Image src={Loading} alt="Loading..." width={50} height={50} />
-                                  <SmallText>CARREGANDO LINKS...</SmallText>
+                  <ListBoxMessage>
+                      {linksLoading && (
+                          <>
+                              <Image src={Loading} alt="Loading..." width={50} height={50} />
+                              <SmallText>CARREGANDO LINKS...</SmallText>
+                          </>
+                      )}
+                      {!linksLoading && (!shortLinks|| shortLinks.length === 0) && (
+                          <>
+                              <hr />
+                              <Image src={LinkIcon} alt='Link Icon' width={30} height={30} />
+                              <SmallText>AINDA NÃO EXISTEM LINKS CADASTRADOS</SmallText>
+                          </>
+                      )}
+                      {shortLinks && shortLinks.length > 0 && !linksLoading && shortLinks.map((linkInfo) => (
+                          <>
+                              <ListAccessRow key={linkInfo.id}>
+                                  <div
+                                      onClick={() =>{
+                                          if (typeof window !== 'undefined') {
+                                            window.open(`${origin}/${linkInfo.shortId}`, '_blank')
+                                        }
+                                      }}
+                                      style={{ flex: 1, cursor: 'pointer' }}
+                                  >
+                                      <TextLink>{`${origin}/${linkInfo.shortId}`}</TextLink>
+                                      <SmallText>{linkInfo.original}</SmallText>
+                                  </div>
+                                  <div>
+                                      <SmallText>{`${linkInfo?.accesses ? linkInfo.accesses.length : 0} acessos`}</SmallText>
+                                  </div>
+                                  <div style={{ display: 'flex'}}>
+                                      <ButtonCommand onClick={()=> copyToClipboard(`${origin}/${linkInfo.shortId}`)} >
+                                          <Image src={CopyIcon} alt="Copiar Link" width={12} height={12} />
+                                      </ButtonCommand>
+                                      <ButtonCommand onClick={()=> removeShortedLink(linkInfo.id)} >
+                                          <Image src={TrashIcon} alt="Excluir Link" width={12} height={12} />
+                                      </ButtonCommand>
 
-                              </>
-                          )}
-                          {!linksLoading && (!shortLinks|| shortLinks.length === 0) && (
-                              <>
-                                  <hr />
-                                  <Image src={LinkIcon} alt='Link Icon' width={30} height={30} />
-                                  <SmallText>AINDA NÃO EXISTEM LINKS CADASTRADOS</SmallText>
-                              </>
-                          )}
-                          {shortLinks && shortLinks.length > 0 && !linksLoading && shortLinks.map((linkInfo) => (
-                              <>
-                                  <hr />
-                                  <ListAccessRow key={linkInfo.id}>
-                                      <div
-                                          onClick={() =>{
-                                              if (typeof window !== 'undefined') {
-                                                window.open(`${origin}/${linkInfo.shortId}`, '_blank')
-                                            }
-                                          }}
-                                          style={{ flex: 1, cursor: 'pointer' }}
-                                      >
-                                          <TextLink>{`${origin}/${linkInfo.shortId}`}</TextLink>
-                                          <SmallText>{linkInfo.original}</SmallText>
-                                      </div>
-                                      <div style={{ padding: '10px' }}>
-                                          <SmallText>{`${linkInfo?.accesses ? linkInfo.accesses.length : 0} acessos`}</SmallText>
-                                      </div>
-                                      <div style={{ display: 'flex', gap: '10px'}}>
-                                          <ButtonCommand onClick={()=> copyToClipboard(`${origin}/${linkInfo.shortId}`)} >
-                                              <Image src={CopyIcon} alt="Copiar Link" width={16} height={16} />
-                                          </ButtonCommand>
-                                          <ButtonCommand onClick={()=> removeShortedLink(linkInfo.id)} >
-                                              <Image src={TrashIcon} alt="Excluir Link" width={16} height={16} />
-                                          </ButtonCommand>
-
-                                      </div>
-                                  </ListAccessRow>
-                              </>
-                          ))}
-                      </ListBoxMessage>
+                                  </div>
+                              </ListAccessRow>
+                          </>
+                      ))}
+                  </ListBoxMessage>
               </Box>
           </BoxContainer>
 
