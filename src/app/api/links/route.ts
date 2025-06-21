@@ -47,10 +47,3 @@ export async function POST(request: Request): Promise<Response> {
         }
     }
 }
-
-// Função para gerar shortId
-function generateShortId(): string {
-    const timestamp = Date.now().toString(36); // Converte o timestamp em base 36
-    const randomPart = Math.random().toString(36).substring(2, 6); // Gera 4 caracteres aleatórios em base 36
-    return `${timestamp}${randomPart}`; // Combina os dois
-}

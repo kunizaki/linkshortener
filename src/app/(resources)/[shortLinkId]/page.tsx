@@ -10,7 +10,13 @@ import {ShortLink} from "@/types/ShortLink";
 import Logo from '@/assets/logo.png'
 import {useRouter} from "next/navigation";
 
-export default function RedirectPage({ params }: { params: { shortLinkId: string } }) {
+interface RedirectPageProps {
+    params: {
+        shortLinkId: string
+    }
+}
+
+export default function RedirectPage({ params }: RedirectPageProps) {
     const { shortLinkId } = params
     const router = useRouter()
 
@@ -30,7 +36,7 @@ export default function RedirectPage({ params }: { params: { shortLinkId: string
         } finally {
             setProcessing(false)
         }
-    }, [shortLinkId])
+    }, [router, shortLinkId])
 
     const redirectToOriginal = useCallback(async () => {
         if (!shortUrlInfos) return

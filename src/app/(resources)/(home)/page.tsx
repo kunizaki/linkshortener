@@ -319,14 +319,14 @@ export default function HomePage() {
 
                               </>
                           )}
-                          {!shortLinks && !linksLoading && (
+                          {!linksLoading && (!shortLinks|| shortLinks.length === 0) && (
                               <>
                                   <hr />
                                   <Image src={LinkIcon} alt='Link Icon' width={30} height={30} />
                                   <SmallText>AINDA NÃO EXISTEM LINKS CADASTRADOS</SmallText>
                               </>
                           )}
-                          {shortLinks && !linksLoading && shortLinks.map((linkInfo) => (
+                          {shortLinks && shortLinks.length > 0 && !linksLoading && shortLinks.map((linkInfo) => (
                               <>
                                   <hr />
                                   <ListAccessRow key={linkInfo.id}>
