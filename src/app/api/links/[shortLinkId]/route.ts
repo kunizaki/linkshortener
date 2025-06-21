@@ -1,15 +1,15 @@
-import { db } from "@/db"
-import { shortLinks } from "@/db/schema"
-import { eq } from "drizzle-orm"
-import { z } from "zod"
+import {PrismaClient} from "@prisma/client"
+import {z} from "zod"
 
 export async function GET(request: Request, { params }: { params: { shortLinkId: string } }): Promise<Response> {
-    const { shortLinkId: paramShortLinkId } = params
-    const shortLinkId = z.string().parse(paramShortLinkId)
+    const shortLinkId = z.string().parse(params.shortLinkId)
     try {
         // Buscar um link da base de dados pelo shortId
-        const shortLink = await db.query.shortLinks.findFirst({
-            where: eq(shortLinks.shortId, shortLinkId)
+        const prisma = new PrismaClient()
+        const shortLink = await prisma.shortLink.findFirst({
+            where: {
+                shortId: shortLinkId
+            }
         })
 
         if (!shortLink) {
@@ -27,20 +27,17 @@ export async function GET(request: Request, { params }: { params: { shortLinkId:
 }
 
 export async function PUT(request: Request, { params }: { params: { shortLinkId: string } }): Promise<Response> {
-    const { shortLinkId: paramShortLinkId } = params
-    const shortLinkId = z.string().parse(paramShortLinkId)
+    const shortLinkId = z.string().parse(params.shortLinkId)
     const body = await request.json()
     try {
         // Atualiza um shortlink na base de dados
-        const result = await db.update(shortLinks)
-            .set(body)
-            .where(eq(shortLinks.id, shortLinkId))
-            .returning()
-
-        if (result.length === 0) {
-            return Response.json({ message: 'Link não encontrado' }, { status: 404 })
-        }
-
+        const prisma = new PrismaClient()
+        await prisma.shortLink.update({
+            where: {
+                id: shortLinkId
+            },
+            data: body
+        })
         return Response.json({ message: 'Link atualizado com sucesso.'})
     } catch (error) {
         if (error instanceof Error) {
@@ -52,17 +49,17 @@ export async function PUT(request: Request, { params }: { params: { shortLinkId:
 }
 
 export async function DELETE(request: Request, { params }: { params: { shortLinkId: string } }): Promise<Response> {
-    const { shortLinkId: paramShortLinkId } = await params
-    const shortLinkId = z.string().parse(paramShortLinkId)
+    const shortLinkId = z.string().parse(params.shortLinkId)
     try {
-        const result = await db.delete(shortLinks)
-            .where(eq(shortLinks.id, shortLinkId))
-            .returning()
-
-        if (result.length === 0) {
-            return Response.json({ message: 'Link não encontrado' }, { status: 404 })
+        const prisma = new PrismaClient()
+        const response = await prisma.shortLink.delete({
+            where: {
+                id: shortLinkId
+            }
+        })
+        if (!response) {
+            return Response.json({ message: "Erro na exclusão do link" }, { status: 500 })
         }
-
         return Response.json({ message: 'Link excluído com sucesso.'})
     } catch (error) {
         if (error instanceof Error) {
