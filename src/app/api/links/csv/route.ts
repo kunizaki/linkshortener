@@ -1,5 +1,6 @@
 import { db } from "@/db"
 import { NextResponse } from "next/server"
+import { v4 as uuidv4 } from 'uuid'
 
 export async function GET(): Promise<Response> {
     try {
@@ -21,11 +22,14 @@ export async function GET(): Promise<Response> {
 
         const csvContent = csvHeader + csvRows
 
+        // Generate a unique filename using UUID
+        const uniqueFilename = `links-${uuidv4()}.csv`
+
         // Retornar o arquivo CSV
         return new NextResponse(csvContent, {
             headers: {
                 'Content-Type': 'text/csv; charset=utf-8',
-                'Content-Disposition': 'attachment; filename="links.csv"'
+                'Content-Disposition': `attachment; filename="${uniqueFilename}"`
             }
         })
     } catch (error) {

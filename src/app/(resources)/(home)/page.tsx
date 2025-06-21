@@ -185,11 +185,21 @@ export default function HomePage() {
                 return
             }
 
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = 'links.csv'; // Nome padrão caso não exista um cabeçalho
+
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename="?(.+)"?/);
+                if (match && match[1]) {
+                    filename = match[1];
+                }
+            }
+
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'links.csv';
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
