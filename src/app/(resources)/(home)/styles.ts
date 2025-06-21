@@ -106,13 +106,11 @@ export const DownloadButton = styled.button`
 export const ListBoxMessage = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     align-content: center;
     overflow-y: auto;
     max-height: 60vh;
-    padding-top: 40px;
-    padding-bottom: 10px;
 `
 
 export const ListAccessRow = styled.div`
