@@ -121,7 +121,7 @@ export const ListAccessRow = styled.div`
     align-content: center;
     width: 100%;
     gap: 10px;
-    border-top: 1px solid #E1E1E6;
+    border-bottom: 1px solid #E1E1E6;
     padding-top: 10px;
     padding-bottom: 10px;
 `
